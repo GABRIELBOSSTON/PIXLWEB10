@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WE CARE ABOUT YOU</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>kami ada untuk mengingatkan kamu</h1>
+
+    <div class="button-container">
+        <button id="romanticBtn">
+            <img src="images.png" alt="Wanita" class="button-image">
+        </button>
+        <button id="parentBtn">
+            <img src="images.jpg" alt="Orang Tua" class="button-image">
+        </button>
+    </div>
+
+    <textarea id="task" placeholder="ingatkan aku..."></textarea>
+    <div class="reminder-container">
+        <input type="time" id="time">
+        <button id="setReminderBtn">Set Reminder</button>
+    </div>
+
+    
+    <button id="showReminderBtn" class="show-reminder-btn">=</button>
+
+    
+    <div id="reminderDetails" class="reminder-details">
+        <p id="reminderText">Anda belum memilih siapa yang mengingatkan.</p>
+        <button id="closeReminderBtn" class="close-btn">Keluar</button>
+    </div>
+
+    <script>
+        let selectedRole = "romantic";
+        let reminderTask = "";
+        let reminderTime = "";
+
+        document.getElementById('romanticBtn').addEventListener('click', () => {
+            selectedRole = "romantic";
+            alert("Kamu memilih Pacar untuk mengingatkan!");
+        });
+
+        document.getElementById('parentBtn').addEventListener('click', () => {
+            selectedRole = "parent";
+            alert("Kamu memilih Orang Tua untuk mengingatkan!");
+        });
+
+        document.getElementById('setReminderBtn').addEventListener('click', function() {
+            const task = document.getElementById('task').value;
+            const time = document.getElementById('time').value;
+
+            if (!task.trim() || !time) {
+                alert("Silakan masukkan tugas dan waktu yang valid!");
+                return;
+            }
+
+            const [hours, minutes] = time.split(':');
+            const now = new Date();
+            const reminderTimeObj = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+
+            const timeToReminder = reminderTimeObj - now;
+
+            if (timeToReminder < 0) {
+                alert("Waktu sudah berlalu, silakan pilih waktu yang akan datang!");
+                return;
+            }
+
+            reminderTask = task;
+            reminderTime = time;
+
+            const message = selectedRole === "romantic"
+                ? `Sayang, jangan lupa ${reminderTask} ya!`
+                : `Nak, jangan lupa ${reminderTask} ya!`;
+
+            setTimeout(() => {
+                if (Notification.permission === "granted") {
+                    new Notification("Pengingat!", {
+                        body: message,
+                        icon: selectedRole === "romantic"
+                            ? "https://via.placeholder.com/100?text=Wanita"
+                            : "https://via.placeholder.com/100?text=Ortu"
+                    });
+                } else {
+                    alert("Notifikasi diblokir. Silakan izinkan notifikasi di pengaturan browser.");
+                }
+            }, timeToReminder);
+
+            alert(`Pengingat untuk "${reminderTask}" telah diset untuk jam ${reminderTime}.`);
+        });
+
+        document.getElementById('showReminderBtn').addEventListener('click', () => {
+            const reminderText = reminderTask && reminderTime
+                ? `Jam ${reminderTime} ingatkan saya ${reminderTask}.`
+                : "Anda belum mengatur pengingat.";
+
+            document.getElementById('reminderText').textContent = reminderText;
+            document.getElementById('reminderDetails').style.display = 'block';
+        });
+
+        document.getElementById('closeReminderBtn').addEventListener('click', () => {
+            document.getElementById('reminderDetails').style.display = 'none';
+        });
+
+        if (Notification.permission === "default") {
+            Notification.requestPermission();
+        }
+    </script>
+
+    <style>
+       
+        .show-reminder-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #e11eff; 
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .show-reminder-btn:hover {
+            background-color: #cb58b8; 
+        }
+
+      
+        .reminder-details {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .close-btn {
+            background-color: #a546b4; 
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .close-btn:hover {
+            background-color: #ff1ef8; 
+        }
+
+
+        .reminder-container {
+            text-align: center;
+            margin-top: -20px;
+        }
+
+        .reminder-container textarea, .reminder-container input[type="time"] {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ff1ece; 
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .reminder-container button {
+            padding: 10px 20px;
+            background-color: #ff1ef0; 
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .reminder-container button:hover {
+            background-color: #b246b4; 
+        }
+    </style>
+</body>
+</html>
